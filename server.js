@@ -23,6 +23,7 @@ import { teamRouter } from "./routes/team.js";
 import { contactRouter } from "./routes/contact.js";
 import { applicationsRouter } from "./routes/applications.js";
 import { notFoundHandler, errorHandler } from "./middleware/errors.js";
+import { apiLogger } from "./middleware/logger.js";
 
 const app = express();
 
@@ -39,6 +40,9 @@ app.use((req, res, next) => {
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
+
+/* Logs every /api request + the data returned (see middleware/logger.js). */
+app.use(apiLogger);
 
 /* ── API ──────────────────────────────────────────────────────────────── */
 

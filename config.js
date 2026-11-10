@@ -42,4 +42,9 @@ export const config = {
   },
   distDir: resolve(ROOT, process.env.DIST_DIR || "../react-project/dist"),
   uploadsDir: resolve(ROOT, "uploads"),
+
+  /* ── API request/response logging (middleware/logger.js) ─────────────── */
+  logRequests: process.env.LOG_REQUESTS !== "false",
+  logBodyChars: Number(process.env.LOG_BODY_CHARS ?? 2000),
+  logFile: process.env.LOG_FILE !== "false",
 };

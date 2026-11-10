@@ -44,7 +44,9 @@ export function collectionRouter({ table, idPrefix, columns, toApi, validate, to
   router.get("/:id", async (req, res, next) => {
     try {
       const { rows } = await query(`SELECT * FROM ${table} WHERE id = $1`, [req.params.id]);
-      if (!rows[0]) throw new ApiError(404, "Not found.");
+      if (!rows[0]) {
+        throw new ApiError(404, "Not found.");
+      }
       res.json(toApi(rows[0]));
     } catch (err) {
       next(err);

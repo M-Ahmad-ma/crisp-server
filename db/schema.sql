@@ -63,6 +63,21 @@ CREATE TABLE IF NOT EXISTS team (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+/* Unified data — the public site is rendered straight from the admin
+   tables, so the tables carry every field the public pages display. */
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS slug TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS shift TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS icon TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS summary TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS salary_display TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS responsibilities JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS benefits JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE jobs ALTER COLUMN salary_currency SET DEFAULT 'USD';
+
+ALTER TABLE team ADD COLUMN IF NOT EXISTS is_owner BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE team ADD COLUMN IF NOT EXISTS quote TEXT;
+ALTER TABLE team ADD COLUMN IF NOT EXISTS credentials JSONB NOT NULL DEFAULT '[]'::jsonb;
+
 CREATE TABLE IF NOT EXISTS contact_messages (
   id         TEXT PRIMARY KEY,
   name       TEXT NOT NULL,
@@ -97,5 +112,7 @@ CREATE TABLE IF NOT EXISTS content (
 CREATE INDEX IF NOT EXISTS idx_products_status ON products (status);
 CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs (status);
 CREATE INDEX IF NOT EXISTS idx_team_status ON team (status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_jobs_slug ON jobs (slug) WHERE slug IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_team_owner ON team (is_owner) WHERE is_owner;
 CREATE INDEX IF NOT EXISTS idx_messages_created ON contact_messages (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_applications_created ON applications (created_at DESC);

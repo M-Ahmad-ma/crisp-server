@@ -1,5 +1,9 @@
 /* ==========================================================================
    Admin team roster CRUD — /api/team
+
+   These rows also feed the public About page (GET /api/content). The
+   founder is a normal row flagged `isOwner`; their quote and credentials
+   are stored here too.
    ========================================================================== */
 
 import { collectionRouter, required, optionalStr } from "./collection.js";
@@ -17,6 +21,9 @@ function toApi(row) {
     bio: row.bio,
     avatar: row.avatar,
     joinedAt: row.joined_at,
+    isOwner: row.is_owner === true,
+    quote: row.quote,
+    credentials: Array.isArray(row.credentials) ? row.credentials : [],
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -35,6 +42,8 @@ function validate(body, existing) {
     }
   }
 
+  const credentials = g("credentials");
+
   return {
     name,
     role: optionalStr(g("role")),
@@ -45,6 +54,9 @@ function validate(body, existing) {
     bio: optionalStr(g("bio")),
     avatar: optionalStr(g("avatar")),
     joinedAt,
+    isOwner: body.isOwner !== undefined ? Boolean(body.isOwner) : (existing?.isOwner ?? false),
+    quote: optionalStr(g("quote")),
+    credentials: Array.isArray(credentials) ? credentials : [],
   };
 }
 
@@ -59,6 +71,9 @@ function toRow(values) {
     bio: values.bio,
     avatar: values.avatar,
     joined_at: values.joinedAt,
+    is_owner: values.isOwner,
+    quote: values.quote,
+    credentials: JSON.stringify(values.credentials),
   };
 }
 
